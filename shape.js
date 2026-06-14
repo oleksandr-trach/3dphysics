@@ -50,7 +50,7 @@ class Triangle {
 
         let dot = vec3.dot(tempTransformedNormal, lightDir);
         let brightness = 0.2 + Math.max(0, dot) * 0.8;
-        let colorValue = Math.floor(brightness * 100);
+        let colorValue = Math.floor(brightness * 200);
         let colorString = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
 
         let screenVertices = this.vertices.map(function(vertex) {
@@ -76,7 +76,11 @@ class Triangle {
 
         context.closePath();
         context.fillStyle = colorString;
-        context.lineWidth = 1;
         context.fill();
+
+        context.strokeStyle = colorString;
+        context.lineWidth = 1.5;
+        context.lineJoin = "round";
+        context.stroke();
     }
 }
