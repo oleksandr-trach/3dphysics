@@ -15,6 +15,9 @@ const projectionMatrix = mat4.create();
 const viewProjMatrix = mat4.create();
 const mvpMatrix = mat4.create();
 
+const globalLightDirection = vec3.fromValues(0, 0, 1);
+vec3.normalize(globalLightDirection, globalLightDirection);
+
 function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
 
@@ -53,7 +56,7 @@ const center = vec3.create(0, 0, -1);
 const up = vec3.create(0, 1, 0);
 
 function render() {
-    context.fillStyle = "#050505";
+    context.fillStyle = "#000000";
     context.fillRect(0, 0, canvas.logicalWidth, canvas.logicalHeight);
 
     if (triangle) {
@@ -65,7 +68,7 @@ function render() {
         mat4.multiply(viewProjMatrix, projectionMatrix, viewMatrix);
         mat4.multiply(mvpMatrix, viewProjMatrix, modelMatrix);
 
-        triangle.draw(mvpMatrix, modelMatrix);
+        triangle.draw(mvpMatrix, modelMatrix, globalLightDirection);
     }
 }
 

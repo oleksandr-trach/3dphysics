@@ -22,7 +22,7 @@ class Triangle {
         this.normal = vec3.fromValues(0, 0, 1);
     }
 
-    draw(mvpMatrix, modelMatrix) {
+    draw(mvpMatrix, modelMatrix, lightDir) {
         // Get 3x3 from ModelMatrix
         let normalMatrix = mat3.create();
         mat3.fromMat4(normalMatrix, modelMatrix);
@@ -31,9 +31,7 @@ class Triangle {
         vec3.transformMat3(transformedNormal, this.normal, normalMatrix);
         vec3.normalize(transformedNormal, transformedNormal);
 
-        let lightDirection = vec3.fromValues(0, 0, 1);
-
-        let dot = vec3.dot(transformedNormal, lightDirection);
+        let dot = vec3.dot(transformedNormal, lightDir);
         let brightness = Math.max(0, dot);
         let colorValue = Math.floor(brightness * 255);
         let colorString = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
