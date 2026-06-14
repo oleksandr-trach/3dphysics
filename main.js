@@ -18,7 +18,6 @@ const mvpMatrix = mat4.create();
 const tempNormalMatrix = mat3.create();
 const tempTransformedNormal = vec3.create();
 const tempViewDir = vec3.create();
-const triangleWorldPos = vec3.create();
 const tempClipVec4 = vec4.create();
 const tempDepthVec4 = vec4.create();
 
@@ -50,19 +49,80 @@ resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
 function setup() {
-    triangles[0] = new Triangle(
-        new Vertex(-0.5, 0.5, 0),
-        new Vertex(0.5, -0.5, 0),
-        new Vertex(-0.5, -0.5, 0),
-        vec3.fromValues(0, 0, 1)
-    );
-
-    triangles[1] = new Triangle(
-        new Vertex(-0.5, 0.5, 0),
-        new Vertex(0.5, 0.5, 0),
-        new Vertex(0.5, -0.5, 0),
-        vec3.fromValues(0, 0, 1)
-    );
+    triangles = [
+        new Triangle(
+            new Vertex(-0.5,  0.5,  0.5),
+            new Vertex( 0.5, -0.5,  0.5),
+            new Vertex(-0.5, -0.5,  0.5),
+            vec3.fromValues(0, 0, 1)
+        ),
+        new Triangle(
+            new Vertex(-0.5,  0.5,  0.5),
+            new Vertex( 0.5,  0.5,  0.5),
+            new Vertex( 0.5, -0.5,  0.5),
+            vec3.fromValues(0, 0, 1)
+        ),
+        new Triangle(
+            new Vertex( 0.5,  0.5, -0.5),
+            new Vertex(-0.5, -0.5, -0.5),
+            new Vertex( 0.5, -0.5, -0.5),
+            vec3.fromValues(0, 0, -1)
+        ),
+        new Triangle(
+            new Vertex( 0.5,  0.5, -0.5),
+            new Vertex(-0.5,  0.5, -0.5),
+            new Vertex(-0.5, -0.5, -0.5),
+            vec3.fromValues(0, 0, -1)
+        ),
+        new Triangle(
+            new Vertex(-0.5,  0.5, -0.5),
+            new Vertex(-0.5, -0.5,  0.5),
+            new Vertex(-0.5, -0.5, -0.5),
+            vec3.fromValues(-1, 0, 0)
+        ),
+        new Triangle(
+            new Vertex(-0.5,  0.5, -0.5),
+            new Vertex(-0.5,  0.5,  0.5),
+            new Vertex(-0.5, -0.5,  0.5),
+            vec3.fromValues(-1, 0, 0)
+        ),
+        new Triangle(
+            new Vertex( 0.5,  0.5,  0.5),
+            new Vertex( 0.5, -0.5, -0.5),
+            new Vertex( 0.5, -0.5,  0.5),
+            vec3.fromValues(1, 0, 0)
+        ),
+        new Triangle(
+            new Vertex( 0.5,  0.5,  0.5),
+            new Vertex( 0.5,  0.5, -0.5),
+            new Vertex( 0.5, -0.5, -0.5),
+            vec3.fromValues(1, 0, 0)
+        ),
+        new Triangle(
+            new Vertex(-0.5,  0.5, -0.5),
+            new Vertex( 0.5,  0.5,  0.5),
+            new Vertex(-0.5,  0.5,  0.5),
+            vec3.fromValues(0, 1, 0)
+        ),
+        new Triangle(
+            new Vertex(-0.5,  0.5, -0.5),
+            new Vertex( 0.5,  0.5, -0.5),
+            new Vertex( 0.5,  0.5,  0.5),
+            vec3.fromValues(0, 1, 0)
+        ),
+        new Triangle(
+            new Vertex(-0.5, -0.5,  0.5),
+            new Vertex( 0.5, -0.5, -0.5),
+            new Vertex(-0.5, -0.5, -0.5),
+            vec3.fromValues(0, -1, 0)
+        ),
+        new Triangle(
+            new Vertex(-0.5, -0.5,  0.5),
+            new Vertex( 0.5, -0.5,  0.5),
+            new Vertex( 0.5, -0.5, -0.5),
+            vec3.fromValues(0, -1, 0)
+        )
+    ];
 }
 
 function update(dt) {
@@ -81,7 +141,7 @@ function render() {
     if (triangles.length === 0) return;
 
     mat4.fromTranslation(modelMatrix, [0, 0, 0]);
-    mat4.rotate(modelMatrix, modelMatrix, rotation, [0, 1, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, rotation, [1, 1, 1]);
     mat4.lookAt(viewMatrix, eye, center, up);
     mat4.multiply(viewProjMatrix, projectionMatrix, viewMatrix);
     mat4.multiply(mvpMatrix, viewProjMatrix, modelMatrix);

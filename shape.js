@@ -28,6 +28,9 @@ class Triangle {
         // Move triangle center to world coordinates
         vec4.transformMat4(tempDepthVec4, localVec4, modelMatrix);
 
+        if (!this.worldCenter) this.worldCenter = vec3.create();
+        vec3.set(this.worldCenter, tempDepthVec4[0], tempDepthVec4[1], tempDepthVec4[2]);
+
         // Return world coordinate Z (how deep is triangle center in the scene)
         return tempDepthVec4[2];
     }
@@ -37,8 +40,7 @@ class Triangle {
         vec3.transformMat3(tempTransformedNormal, this.normal, tempNormalMatrix);
         vec3.normalize(tempTransformedNormal, tempTransformedNormal);
 
-        vec3.set(triangleWorldPos, modelMatrix[12], modelMatrix[13], modelMatrix[14]);
-        vec3.subtract(tempViewDir, cameraEye, triangleWorldPos);
+        vec3.subtract(tempViewDir, cameraEye, this.worldCenter);
         vec3.normalize(tempViewDir, tempViewDir);
 
         let cameraDot = vec3.dot(tempTransformedNormal, tempViewDir);
@@ -48,8 +50,8 @@ class Triangle {
 
         let dot = vec3.dot(tempTransformedNormal, lightDir);
         let brightness = 0.2 + Math.max(0, dot) * 0.8;
-        let colorValue = Math.floor(brightness * 255);
-        let colorString = `rgb(${colorValue}, 0, 0)`;
+        let colorValue = Math.floor(brightness * 100);
+        let colorString = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
 
         let screenVertices = this.vertices.map(function(vertex) {
             let localVec4 = vec4.fromValues(vertex.x, vertex.y, vertex.z, 1);
