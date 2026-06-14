@@ -12,14 +12,9 @@ class Vertex {
 }
 
 class Triangle {
-    constructor() {
-        this.vertices = [
-            new Vertex(0, 1, 0),
-            new Vertex(1, 0, 0),
-            new Vertex(-1, 0, 0)
-        ];
-
-        this.normal = vec3.fromValues(0, 0, 1);
+    constructor(v1, v2, v3, normal) {
+        this.vertices = [v1, v2, v3];
+        this.normal = normal;
     }
 
     draw(mvpMatrix, modelMatrix, cameraEye, lightDir) {
@@ -64,6 +59,7 @@ class Triangle {
 
         context.closePath();
         context.fillStyle = colorString;
+        context.lineWidth = 1;
         context.fill();
     }
 }

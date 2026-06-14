@@ -5,7 +5,7 @@ const context = canvas.getContext("2d");
 
 let lastTime = 0;
 
-let triangle;
+let triangles = [];
 let rotation = 0;
 
 // Init all matrices to make them in memory just once
@@ -49,7 +49,19 @@ resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
 function setup() {
-    triangle = new Triangle();
+    triangles[0] = new Triangle(
+        new Vertex(-0.5, 0.5, 0),
+        new Vertex(0.5, -0.5, 0),
+        new Vertex(-0.5, -0.5, 0),
+        vec3.fromValues(0, 0, 1)
+    );
+
+    triangles[1] = new Triangle(
+        new Vertex(-0.5, 0.5, 0),
+        new Vertex(0.5, 0.5, 0),
+        new Vertex(0.5, -0.5, 0),
+        vec3.fromValues(0, 0, 1)
+    );
 }
 
 function update(dt) {
@@ -57,16 +69,16 @@ function update(dt) {
     rotation += 0.9 * dt;
 }
 
-const eye = vec3.fromValues(0, 0, 0);
-const center = vec3.fromValues(0, 0, -1);
+const eye = vec3.fromValues(0, 0, 4);
+const center = vec3.fromValues(0, 0, 0);
 const up = vec3.fromValues(0, 1, 0);
 
 function render() {
-    context.fillStyle = "#505050";
+    context.fillStyle = "#000000";
     context.fillRect(0, 0, canvas.logicalWidth, canvas.logicalHeight);
 
-    if (triangle) {
-        mat4.fromTranslation(modelMatrix, [0, 0, -5]);
+    triangles.forEach(triangle => {
+        mat4.fromTranslation(modelMatrix, [0, 0, 0]);
         mat4.rotate(modelMatrix, modelMatrix, rotation, [0, 1, 0]);
 
         mat4.lookAt(viewMatrix, eye, center, up);
@@ -75,7 +87,7 @@ function render() {
         mat4.multiply(mvpMatrix, viewProjMatrix, modelMatrix);
 
         triangle.draw(mvpMatrix, modelMatrix, eye, globalLightDirection);
-    }
+    });
 }
 
 function gameLoop(currentTime) {
