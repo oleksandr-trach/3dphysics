@@ -20,6 +20,7 @@ const tempTransformedNormal = vec3.create();
 const tempViewDir = vec3.create();
 const triangleWorldPos = vec3.create();
 const tempClipVec4 = vec4.create();
+const tempDepthVec4 = vec4.create();
 
 const globalLightDirection = vec3.fromValues(0, 0, 1);
 vec3.normalize(globalLightDirection, globalLightDirection);
@@ -77,16 +78,26 @@ function render() {
     context.fillStyle = "#000000";
     context.fillRect(0, 0, canvas.logicalWidth, canvas.logicalHeight);
 
-    triangles.forEach(triangle => {
-        mat4.fromTranslation(modelMatrix, [0, 0, 0]);
-        mat4.rotate(modelMatrix, modelMatrix, rotation, [0, 1, 0]);
+    if (triangles.length === 0) return;
 
-        mat4.lookAt(viewMatrix, eye, center, up);
+    mat4.fromTranslation(modelMatrix, [0, 0, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, rotation, [0, 1, 0]);
+    mat4.lookAt(viewMatrix, eye, center, up);
+    mat4.multiply(viewProjMatrix, projectionMatrix, viewMatrix);
+    mat4.multiply(mvpMatrix, viewProjMatrix, modelMatrix);
 
-        mat4.multiply(viewProjMatrix, projectionMatrix, viewMatrix);
-        mat4.multiply(mvpMatrix, viewProjMatrix, modelMatrix);
+    // Create an array with calculated depth
+    let sortedTriangles = triangles.map(triangle => {
+        return {
+            instance: triangle,
+            depth: triangle.getAverageDepth(modelMatrix)
+        };
+    });
 
-        triangle.draw(mvpMatrix, modelMatrix, eye, globalLightDirection);
+    sortedTriangles.sort((a, b) => a.depth - b.depth);
+
+    sortedTriangles.forEach(item => {
+        item.instance.draw(mvpMatrix, modelMatrix, eye, globalLightDirection);
     });
 }
 

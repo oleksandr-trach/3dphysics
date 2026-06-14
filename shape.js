@@ -17,6 +17,21 @@ class Triangle {
         this.normal = normal;
     }
 
+    getAverageDepth(modelMatrix) {
+        // Calculating triangle center by its local vertices
+        let localCenterX = (this.vertices[0].x + this.vertices[1].x + this.vertices[2].x) / 3;
+        let localCenterY = (this.vertices[0].y + this.vertices[1].y + this.vertices[2].y) / 3;
+        let localCenterZ = (this.vertices[0].z + this.vertices[1].z + this.vertices[2].z) / 3;
+
+        let localVec4 = vec4.fromValues(localCenterX, localCenterY, localCenterZ, 1);
+
+        // Move triangle center to world coordinates
+        vec4.transformMat4(tempDepthVec4, localVec4, modelMatrix);
+
+        // Return world coordinate Z (how deep is triangle center in the scene)
+        return tempDepthVec4[2];
+    }
+
     draw(mvpMatrix, modelMatrix, cameraEye, lightDir) {
         mat3.fromMat4(tempNormalMatrix, modelMatrix);
         vec3.transformMat3(tempTransformedNormal, this.normal, tempNormalMatrix);
