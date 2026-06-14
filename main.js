@@ -15,6 +15,12 @@ const projectionMatrix = mat4.create();
 const viewProjMatrix = mat4.create();
 const mvpMatrix = mat4.create();
 
+const tempNormalMatrix = mat3.create();
+const tempTransformedNormal = vec3.create();
+const tempViewDir = vec3.create();
+const triangleWorldPos = vec3.create();
+const tempClipVec4 = vec4.create();
+
 const globalLightDirection = vec3.fromValues(0, 0, 1);
 vec3.normalize(globalLightDirection, globalLightDirection);
 
@@ -51,12 +57,12 @@ function update(dt) {
     rotation += 0.9 * dt;
 }
 
-const eye = vec3.create(0, 0, 0);
-const center = vec3.create(0, 0, -1);
-const up = vec3.create(0, 1, 0);
+const eye = vec3.fromValues(0, 0, 0);
+const center = vec3.fromValues(0, 0, -1);
+const up = vec3.fromValues(0, 1, 0);
 
 function render() {
-    context.fillStyle = "#000000";
+    context.fillStyle = "#505050";
     context.fillRect(0, 0, canvas.logicalWidth, canvas.logicalHeight);
 
     if (triangle) {
@@ -68,7 +74,7 @@ function render() {
         mat4.multiply(viewProjMatrix, projectionMatrix, viewMatrix);
         mat4.multiply(mvpMatrix, viewProjMatrix, modelMatrix);
 
-        triangle.draw(mvpMatrix, modelMatrix, globalLightDirection);
+        triangle.draw(mvpMatrix, modelMatrix, eye, globalLightDirection);
     }
 }
 

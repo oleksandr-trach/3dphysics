@@ -22,25 +22,30 @@ class Triangle {
         this.normal = vec3.fromValues(0, 0, 1);
     }
 
-    draw(mvpMatrix, modelMatrix, lightDir) {
-        // Get 3x3 from ModelMatrix
-        let normalMatrix = mat3.create();
-        mat3.fromMat4(normalMatrix, modelMatrix);
+    draw(mvpMatrix, modelMatrix, cameraEye, lightDir) {
+        mat3.fromMat4(tempNormalMatrix, modelMatrix);
+        vec3.transformMat3(tempTransformedNormal, this.normal, tempNormalMatrix);
+        vec3.normalize(tempTransformedNormal, tempTransformedNormal);
 
-        let transformedNormal = vec3.create();
-        vec3.transformMat3(transformedNormal, this.normal, normalMatrix);
-        vec3.normalize(transformedNormal, transformedNormal);
+        vec3.set(triangleWorldPos, modelMatrix[12], modelMatrix[13], modelMatrix[14]);
+        vec3.subtract(tempViewDir, cameraEye, triangleWorldPos);
+        vec3.normalize(tempViewDir, tempViewDir);
 
-        let dot = vec3.dot(transformedNormal, lightDir);
-        let brightness = Math.max(0, dot);
+        let cameraDot = vec3.dot(tempTransformedNormal, tempViewDir);
+        if (cameraDot <= 0) {
+            return;
+        }
+
+        let dot = vec3.dot(tempTransformedNormal, lightDir);
+        let brightness = 0.2 + Math.max(0, dot) * 0.8;
         let colorValue = Math.floor(brightness * 255);
-        let colorString = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
+        let colorString = `rgb(${colorValue}, 0, 0)`;
 
         let screenVertices = this.vertices.map(function(vertex) {
             let localVec4 = vec4.fromValues(vertex.x, vertex.y, vertex.z, 1);
-            let clipVec4 = vec4.transformMat4(vec4.create(), localVec4, mvpMatrix);
 
-            const [x, y, z, w] = clipVec4;
+            vec4.transformMat4(tempClipVec4, localVec4, mvpMatrix);
+            const [x, y, z, w] = tempClipVec4;
 
             let ndcX = x / w;
             let ndcY = y / w;
