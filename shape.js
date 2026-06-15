@@ -36,8 +36,12 @@ class Triangle {
     }
 
     draw(mvpMatrix, modelMatrix, cameraEye, lightDir) {
+        // Important light transformation
+        // Get 3x3 (rotation cos sin!!! and scaling part) part  from model 4x4 matrix
         mat3.fromMat4(tempNormalMatrix, modelMatrix);
+        // Rotate normal arrow according to vertex rotation
         vec3.transformMat3(tempTransformedNormal, this.normal, tempNormalMatrix);
+        // Normalize normal vector
         vec3.normalize(tempTransformedNormal, tempTransformedNormal);
 
         vec3.subtract(tempViewDir, cameraEye, this.worldCenter);
