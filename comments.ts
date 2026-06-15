@@ -197,3 +197,17 @@ requestAnimationFrame((time) => {
     lastTime = time;
     requestAnimationFrame(gameLoop);
 });
+
+const moveFront = vec3.fromValues(Math.cos(radYaw), 0, Math.sin(radYaw));
+vec3.normalize(moveFront, moveFront);
+
+const cameraRight = vec3.create();
+vec3.cross(cameraRight, moveFront, cameraUp);
+vec3.normalize(cameraRight, cameraRight);
+
+const moveSpeed = 2.0 * dt;
+
+if (keys.w) vec3.scaleAndAdd(cameraPos, cameraPos, moveFront, moveSpeed);
+if (keys.s) vec3.scaleAndAdd(cameraPos, cameraPos, moveFront, -moveSpeed);
+if (keys.d) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, moveSpeed);
+if (keys.a) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, -moveSpeed);

@@ -58,6 +58,8 @@ window.addEventListener("keyup", (event) => {
     if (key in keys) keys[key] = false;
 });
 window.addEventListener("mousemove", (event) => {
+    if (document.pointerLockElement !== canvas) return;
+
     const sensitivity = 0.1;
     yaw += event.movementX * sensitivity;
     pitch -= event.movementY * sensitivity;
@@ -158,6 +160,23 @@ function update(dt) {
     cameraFront[2] = Math.sin(radYaw) * Math.cos(radPitch);
     vec3.normalize(cameraFront, cameraFront);
 
+    // FPS
+    const moveFront = vec3.fromValues(Math.cos(radYaw), 0, Math.sin(radYaw));
+    vec3.normalize(moveFront, moveFront);
+
+    const cameraRight = vec3.create();
+    vec3.cross(cameraRight, moveFront, cameraUp);
+    vec3.normalize(cameraRight, cameraRight);
+
+    const moveSpeed = 2.0 * dt;
+
+    if (keys.w) vec3.scaleAndAdd(cameraPos, cameraPos, moveFront, moveSpeed);
+    if (keys.s) vec3.scaleAndAdd(cameraPos, cameraPos, moveFront, -moveSpeed);
+    if (keys.d) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, moveSpeed);
+    if (keys.a) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, -moveSpeed);
+
+    // Spectator
+    /*
     const moveSpeed = 2.0 * dt;
     if (keys.w) vec3.scaleAndAdd(cameraPos, cameraPos, cameraFront, moveSpeed);
     if (keys.s) vec3.scaleAndAdd(cameraPos, cameraPos, cameraFront, -moveSpeed);
@@ -168,6 +187,7 @@ function update(dt) {
 
     if (keys.d) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, moveSpeed);
     if (keys.a) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, -moveSpeed);
+    */
 }
 
 let cameraPos = vec3.fromValues(0, 0, 4);
