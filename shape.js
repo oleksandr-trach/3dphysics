@@ -51,13 +51,19 @@ class Triangle {
         let dot = vec3.dot(tempTransformedNormal, lightDir);
         let brightness = 0.2 + Math.max(0, dot) * 0.8;
         let colorValue = Math.floor(brightness * 200);
-        let colorString = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
+        let colorString = `rgb(${colorValue}, 0, 0)`;
+
+        let behindCamera = false;
 
         let screenVertices = this.vertices.map(function(vertex) {
             let localVec4 = vec4.fromValues(vertex.x, vertex.y, vertex.z, 1);
 
             vec4.transformMat4(tempClipVec4, localVec4, mvpMatrix);
             const [x, y, z, w] = tempClipVec4;
+
+            if (w <= 0.1) {
+                behindCamera = true;
+            }
 
             let ndcX = x / w;
             let ndcY = y / w;
@@ -67,6 +73,10 @@ class Triangle {
 
             return { x: screenX, y: screenY };
         });
+
+        if (behindCamera) {
+            return;
+        }
 
         context.beginPath();
 

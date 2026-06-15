@@ -20,6 +20,7 @@ const tempTransformedNormal = vec3.create();
 const tempViewDir = vec3.create();
 const tempClipVec4 = vec4.create();
 const tempDepthVec4 = vec4.create();
+const cameraTarget = vec3.create();
 
 const globalLightDirection = vec3.fromValues(0, 0, 1);
 vec3.normalize(globalLightDirection, globalLightDirection);
@@ -47,6 +48,23 @@ function resizeCanvas() {
 resizeCanvas();
 
 window.addEventListener("resize", resizeCanvas);
+
+window.addEventListener("keydown", (event) => {
+    const key = event.key.toLowerCase();
+    if (key in keys) keys[key] = true;
+});
+window.addEventListener("keyup", (event) => {
+    const key = event.key.toLowerCase();
+    if (key in keys) keys[key] = false;
+});
+window.addEventListener("mousemove", (event) => {
+    const sensitivity = 0.1;
+    yaw += event.movementX * sensitivity;
+    pitch -= event.movementY * sensitivity;
+
+    if (pitch > 89) pitch = 89;
+    if (pitch < -89) pitch = -89;
+});
 
 function setup() {
     triangles = [
@@ -127,15 +145,39 @@ function setup() {
 
 function update(dt) {
     if (dt > 0.1) dt = 0.1;
-    rotation += 0.4 * dt;
+    rotation += 0.1 * dt;
     if (rotation > 2 * Math.PI) {
         rotation -= 2 * Math.PI;
     }
+
+    const radYaw = yaw * Math.PI / 180;
+    const radPitch = pitch * Math.PI / 180;
+
+    cameraFront[0] = Math.cos(radYaw) * Math.cos(radPitch);
+    cameraFront[1] = Math.sin(radPitch);
+    cameraFront[2] = Math.sin(radYaw) * Math.cos(radPitch);
+    vec3.normalize(cameraFront, cameraFront);
+
+    const moveSpeed = 2.0 * dt;
+    if (keys.w) vec3.scaleAndAdd(cameraPos, cameraPos, cameraFront, moveSpeed);
+    if (keys.s) vec3.scaleAndAdd(cameraPos, cameraPos, cameraFront, -moveSpeed);
+
+    const cameraRight = vec3.create();
+    vec3.cross(cameraRight, cameraFront, cameraUp);
+    vec3.normalize(cameraRight, cameraRight);
+
+    if (keys.d) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, moveSpeed);
+    if (keys.a) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, -moveSpeed);
 }
 
-const eye = vec3.fromValues(0, 0, 4);
+let cameraPos = vec3.fromValues(0, 0, 4);
+let yaw = -90;
+let pitch = 0;
+let cameraFront = vec3.fromValues(0, 0, -1);
+let cameraUp = vec3.fromValues(0, 1, 0);
 const center = vec3.fromValues(0, 0, 0);
-const up = vec3.fromValues(0, 1, 0);
+
+const keys = { w: false, a: false, s: false, d: false };
 
 function render() {
     context.fillStyle = "#000000";
@@ -144,8 +186,9 @@ function render() {
     if (triangles.length === 0) return;
 
     mat4.fromTranslation(modelMatrix, [0, 0, 0]);
-    mat4.rotate(modelMatrix, modelMatrix, rotation, [1, 1, 1]);
-    mat4.lookAt(viewMatrix, eye, center, up);
+    mat4.rotate(modelMatrix, modelMatrix, rotation, [0, 1, 0]);
+    vec3.add(cameraTarget, cameraPos, cameraFront);
+    mat4.lookAt(viewMatrix, cameraPos, cameraTarget, cameraUp);
     mat4.multiply(viewProjMatrix, projectionMatrix, viewMatrix);
     mat4.multiply(mvpMatrix, viewProjMatrix, modelMatrix);
 
@@ -160,7 +203,7 @@ function render() {
     sortedTriangles.sort((a, b) => a.depth - b.depth);
 
     sortedTriangles.forEach(item => {
-        item.instance.draw(mvpMatrix, modelMatrix, eye, globalLightDirection);
+        item.instance.draw(mvpMatrix, modelMatrix, cameraPos, globalLightDirection);
     });
 }
 
@@ -174,6 +217,7 @@ function gameLoop(currentTime) {
     requestAnimationFrame(gameLoop);
 }
 
+canvas.addEventListener("click", () => canvas.requestPointerLock());
 setup();
 
 requestAnimationFrame((time) => {
