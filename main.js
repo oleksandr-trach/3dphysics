@@ -127,7 +127,10 @@ function setup() {
 
 function update(dt) {
     if (dt > 0.1) dt = 0.1;
-    rotation += 0.9 * dt;
+    rotation += 0.4 * dt;
+    if (rotation > 2 * Math.PI) {
+        rotation -= 2 * Math.PI;
+    }
 }
 
 const eye = vec3.fromValues(0, 0, 4);
