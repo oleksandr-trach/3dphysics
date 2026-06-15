@@ -166,7 +166,7 @@ function update(dt) {
     vec3.cross(cameraRight, moveFront, cameraUp);
     vec3.normalize(cameraRight, cameraRight);
 
-    const moveSpeed = 2.0 * dt;
+    const moveSpeed = 0.5 * dt;
 
     if (keys.w) vec3.scaleAndAdd(cameraPos, cameraPos, moveFront, moveSpeed);
     if (keys.s) vec3.scaleAndAdd(cameraPos, cameraPos, moveFront, -moveSpeed);
