@@ -1,3 +1,5 @@
+const { mat4, mat3, vec3, vec4 } = glMatrix;
+
 class Vertex {
     constructor(x, y, z) {
         this.x = x;
@@ -32,7 +34,7 @@ class Triangle {
         vec3.set(this.worldCenter, tempDepthVec4[0], tempDepthVec4[1], tempDepthVec4[2]);
 
         // Return world coordinate Z (how deep is triangle center in the scene)
-        return tempDepthVec4[2];
+        //return tempDepthVec4[2];
     }
 
     draw(mvpMatrix, modelMatrix, cameraEye, lightDir) {

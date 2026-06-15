@@ -1,5 +1,3 @@
-const { mat4, mat3, vec3, vec4 } = glMatrix;
-
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 
@@ -212,15 +210,17 @@ function render() {
     mat4.multiply(viewProjMatrix, projectionMatrix, viewMatrix);
     mat4.multiply(mvpMatrix, viewProjMatrix, modelMatrix);
 
+    triangles.forEach(triangle => triangle.getAverageDepth(modelMatrix));
+
     // Create an array with calculated depth
     let sortedTriangles = triangles.map(triangle => {
         return {
             instance: triangle,
-            depth: triangle.getAverageDepth(modelMatrix)
+            depth: vec3.distance(triangle.worldCenter, cameraPos)
         };
     });
 
-    sortedTriangles.sort((a, b) => a.depth - b.depth);
+    sortedTriangles.sort((a, b) => b.depth - a.depth);
 
     sortedTriangles.forEach(item => {
         item.instance.draw(mvpMatrix, modelMatrix, cameraPos, globalLightDirection);
