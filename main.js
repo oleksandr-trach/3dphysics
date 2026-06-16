@@ -169,24 +169,10 @@ function update(dt) {
 
     const moveSpeed = 0.8 * dt;
 
-    if (keys.w) vec3.scaleAndAdd(cameraPos, cameraPos, moveFront, moveSpeed);
-    if (keys.s) vec3.scaleAndAdd(cameraPos, cameraPos, moveFront, -moveSpeed);
-    if (keys.d) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, moveSpeed);
-    if (keys.a) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, -moveSpeed);
-
-    // Spectator
-    /*
-    const moveSpeed = 2.0 * dt;
     if (keys.w) vec3.scaleAndAdd(cameraPos, cameraPos, cameraFront, moveSpeed);
     if (keys.s) vec3.scaleAndAdd(cameraPos, cameraPos, cameraFront, -moveSpeed);
-
-    const cameraRight = vec3.create();
-    vec3.cross(cameraRight, cameraFront, cameraUp);
-    vec3.normalize(cameraRight, cameraRight);
-
     if (keys.d) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, moveSpeed);
     if (keys.a) vec3.scaleAndAdd(cameraPos, cameraPos, cameraRight, -moveSpeed);
-    */
 }
 
 let cameraPos = vec3.fromValues(0, 0, 4);
