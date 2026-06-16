@@ -20,7 +20,7 @@ const tempClipVec4 = vec4.create();
 const tempDepthVec4 = vec4.create();
 const cameraTarget = vec3.create();
 
-const globalLightDirection = vec3.fromValues(0, 0, 1);
+const globalLightDirection = vec3.fromValues(-0.5, 0.5, 1);
 vec3.normalize(globalLightDirection, globalLightDirection);
 
 function resizeCanvas() {
@@ -153,6 +153,7 @@ function update(dt) {
     const radYaw = yaw * Math.PI / 180;
     const radPitch = pitch * Math.PI / 180;
 
+    // Spherical coordinates
     cameraFront[0] = Math.cos(radYaw) * Math.cos(radPitch);
     cameraFront[1] = Math.sin(radPitch);
     cameraFront[2] = Math.sin(radYaw) * Math.cos(radPitch);
@@ -166,7 +167,7 @@ function update(dt) {
     vec3.cross(cameraRight, moveFront, cameraUp);
     vec3.normalize(cameraRight, cameraRight);
 
-    const moveSpeed = 0.5 * dt;
+    const moveSpeed = 0.8 * dt;
 
     if (keys.w) vec3.scaleAndAdd(cameraPos, cameraPos, moveFront, moveSpeed);
     if (keys.s) vec3.scaleAndAdd(cameraPos, cameraPos, moveFront, -moveSpeed);
@@ -204,7 +205,7 @@ function render() {
     if (triangles.length === 0) return;
 
     mat4.fromTranslation(modelMatrix, [0, 0, 0]);
-    mat4.rotate(modelMatrix, modelMatrix, rotation, [0, 1, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, rotation, [0, 0, 0]);
     vec3.add(cameraTarget, cameraPos, cameraFront);
     mat4.lookAt(viewMatrix, cameraPos, cameraTarget, cameraUp);
     mat4.multiply(viewProjMatrix, projectionMatrix, viewMatrix);
