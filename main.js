@@ -20,7 +20,7 @@ const tempClipVec4 = vec4.create();
 const tempDepthVec4 = vec4.create();
 const cameraTarget = vec3.create();
 
-const globalLightDirection = vec3.fromValues(-0.5, 0.5, 1);
+const globalLightDirection = vec3.fromValues(-0.8, 0.5, 1);
 vec3.normalize(globalLightDirection, globalLightDirection);
 
 function resizeCanvas() {
